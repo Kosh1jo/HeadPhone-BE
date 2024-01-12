@@ -23,10 +23,10 @@ public class Bill {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "payment_id")
     private PaymentMethod payment;
-    @OneToMany(mappedBy ="bill")
+    @OneToMany(mappedBy ="bill",cascade = CascadeType.ALL)
     private List<BillDetail> billDetails;
     private Date billDate;
     private StatusBill statusBill;
