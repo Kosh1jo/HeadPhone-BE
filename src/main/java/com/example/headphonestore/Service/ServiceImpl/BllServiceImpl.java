@@ -159,4 +159,48 @@ public class BllServiceImpl implements BillService {
         billDto.setId(bill.getId());
         return billDto;
     }
+
+    @Override
+    @Transactional
+    public BillDto createBill(BillDto dto) {
+        Bill bill = new Bill();
+        bill.setPayment(paymentMethodRepository.findById(Long.valueOf(dto.getPaymentId())).get());
+        bill.setCustomer(customerRepository.findById(dto.getUserId()).get());
+        bill.setStatusBill(StatusBill.valueOf(dto.getStatusBill()));
+        bill.setBillDate(dto.getBillDate());
+        bill.setShippingAddress(dto.getShippingAddress());
+        bill.setTotalAmount(dto.getTotalAmount());
+        bill.setBillDetails(dto.getBillDetailList().stream().map(billDetailDto -> {
+            BillDetail billDetail = new BillDetail();
+            billDetail.setQuantity(billDetailDto.getQuantity());
+            billDetail.setPrice(billDetailDto.getPrice());
+            billDetail.setProduct(productRepository.getProductById(billDetailDto.getProductId()));
+            billDetail.setBill(bill);
+            return billDetail;
+        }).collect(Collectors.toList()));
+        Bill saved = billRepository.save(bill);
+        BillDto billDto = new BillDto();
+        billDto.setUsername(saved.getCustomer().getUserName());
+        billDto.setBillDate(saved.getBillDate());
+        billDto.setUserId(saved.getCustomer().getId());
+        billDto.setEmail(saved.getCustomer().getEmail());
+        billDto.setStatusBill(saved.getStatusBill().toString());
+        billDto.setBillDetailList(saved.getBillDetails().stream()
+                .map(billDetail -> {
+                    BillDetailDto billDetailDto = new BillDetailDto();
+                    billDetailDto.setBillId(billDetail.getBill().getId());
+                    billDetailDto.setId(billDetail.getId());
+                    billDetailDto.setPrice(billDetail.getPrice());
+                    billDetailDto.setQuantity(billDetail.getQuantity());
+                    billDetailDto.setProductId(billDetail.getProduct().getId());
+                    billDetailDto.setProductName(billDetail.getProduct().getName());
+                    return billDetailDto;
+                }).collect(Collectors.toList()));
+        billDto.setTotalAmount(saved.getTotalAmount());
+        billDto.setPaymentId(saved.getPayment().getId().toString());
+        billDto.setPaymentName(saved.getPayment().getTypePayment().name());
+        billDto.setShippingAddress(saved.getShippingAddress());
+        billDto.setId(saved.getId());
+        return billDto;
+    }
 }

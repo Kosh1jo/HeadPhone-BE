@@ -2,14 +2,15 @@ package com.example.headphonestore.Service.ServiceImpl;
 
 import com.example.headphonestore.Convert.ProductConvert;
 import com.example.headphonestore.Dto.ProductDto;
+import com.example.headphonestore.Entity.BillDetail;
 import com.example.headphonestore.Entity.Product;
+import com.example.headphonestore.Repository.BillDetailRepository;
 import com.example.headphonestore.Repository.CategoryRepository;
 import com.example.headphonestore.Repository.ProductRepository;
 import com.example.headphonestore.Service.ProductService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,11 +31,13 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductConvert productConvert;
+    private final BillDetailRepository billDetailRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductConvert productConvert) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, ProductConvert productConvert, BillDetailRepository billDetailRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productConvert = productConvert;
+        this.billDetailRepository = billDetailRepository;
     }
 
     @Override
@@ -93,8 +97,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public String deleteProduct(Long id) {
+       Optional<List<BillDetail>> billDetails =  billDetailRepository.findBillDetailsByProductId(id);
         try {
-            productRepository.deleteById(id);
+            if (billDetails.isPresent()) {
+                return "Delete";
+            } else {
+                productRepository.deleteById(id);
+            }
             return "Delete";
         }catch (Exception e) {
             e.printStackTrace();

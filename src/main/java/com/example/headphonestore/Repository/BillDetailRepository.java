@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BillDetailRepository extends JpaRepository<BillDetail, Long> {
@@ -14,4 +15,5 @@ public interface BillDetailRepository extends JpaRepository<BillDetail, Long> {
             " u.bill.id =:id")
     List<BillDetail> findBillDetailsByBillId(Long id);
     BillDetail findBillDetailById(Long id);
+    Optional<List<BillDetail>> findBillDetailsByProductId(Long id);
 }

@@ -13,4 +13,6 @@ public interface BillService {
     String deleteBill(Long id);
 
     BillDto deleteBillDetailInBill(Long id, Long detailId);
+
+    BillDto createBill(BillDto dto);
 }

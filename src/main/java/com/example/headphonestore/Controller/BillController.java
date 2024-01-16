@@ -20,6 +20,11 @@ public class BillController {
         return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(),
                 billService.getAllBills(),"Get all bill complete"));
     }
+    @PostMapping("/create")
+    public ResponseEntity<BaseResponse> createBill(@RequestBody BillDto dto) {
+        return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(),
+                billService.createBill(dto),"Create bill complete"));
+    }
     @PutMapping("/update/{id}")
     public ResponseEntity<BaseResponse> updateBill(@PathVariable(name = "id") Long id, @RequestBody BillDto dto) {
         return ResponseEntity.ok(new BaseResponse(HttpStatus.OK.value(),
